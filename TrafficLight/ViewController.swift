@@ -9,39 +9,60 @@ import UIKit
 
 final class ViewController: UIViewController {
     
-    @IBOutlet var redTrafficLightView: UIView!
-    @IBOutlet var yellowTrafficLightView: UIView!
-    @IBOutlet var greenTrafficLightView: UIView!
-    @IBOutlet var switchTrafficLightButton: UIButton!
+    @IBOutlet private var redLight: UIView!
+    @IBOutlet private var yellowLight: UIView!
+    @IBOutlet private var greenLight: UIView!
+    
+    @IBOutlet private var switchTrafficLightButton: UIButton!
+    
+    private let lightIsOn: CGFloat = 1
+    private let lightIsOff: CGFloat = 0.3
+    private var currentLight: CurrentLight = .red
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        
+        switchTrafficLightButton.layer.cornerRadius = 10
+        
+        redLight.alpha = lightIsOff
+        yellowLight.alpha = lightIsOff
+        greenLight.alpha = lightIsOff
+        
     }
 
-    @IBAction func switchTrafficLightButtonDidTupped() {
-        switchTrafficLightButton.setTitle("NEXT", for: .normal)
+    override func viewDidLayoutSubviews() {
+        redLight.layer.cornerRadius = redLight.frame.width / 2
+        yellowLight.layer.cornerRadius = yellowLight.frame.width / 2
+        greenLight.layer.cornerRadius = greenLight.frame.width / 2
+    }
+    
+    @IBAction private func switchTrafficLightButtonDidTupped() {
         
-        if redTrafficLightView.alpha == 1 {
-            redTrafficLightView.alpha = 0.3
-            yellowTrafficLightView.alpha = 1
-        } else if yellowTrafficLightView.alpha == 1 {
-            yellowTrafficLightView.alpha = 0.3
-            greenTrafficLightView.alpha = 1
-        } else if greenTrafficLightView.alpha == 1 {
-            greenTrafficLightView.alpha = 0.3
-            redTrafficLightView.alpha = 1
-        } else {
-            redTrafficLightView.alpha = 1
+        if switchTrafficLightButton.currentTitle == "START" {
+            switchTrafficLightButton.setTitle("NEXT", for: .normal)
+        }
+        
+        switch currentLight {
+        case .red:
+            redLight.alpha = lightIsOn
+            greenLight.alpha = lightIsOff
+            currentLight = .yellow
+        case .yellow:
+            yellowLight.alpha = lightIsOn
+            redLight.alpha = lightIsOff
+            currentLight = .green
+        case .green:
+            greenLight.alpha = lightIsOn
+            yellowLight.alpha = lightIsOff
+            currentLight = .red
         }
     }
-    
-    private func setupUI() {
-        redTrafficLightView.layer.cornerRadius = 62.5
-        yellowTrafficLightView.layer.cornerRadius = 62.5
-        greenTrafficLightView.layer.cornerRadius = 62.5
-        switchTrafficLightButton.layer.cornerRadius = 10
-    }
-    
 }
 
+// MARK: - CurrentLight
+extension ViewController {
+    private enum CurrentLight {
+        case red, yellow, green
+    }
+}
